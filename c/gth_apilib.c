@@ -2251,7 +2251,7 @@ static int new_sdh_atm_aal_monitor(GTH_api *api,
 
 // Win32 requires an initialisation call to its socket library at program
 // startup.
-void win32_specific_startup() {
+void win32_specific_startup(void) {
 #ifdef WIN32
   WSADATA wsa_data;
 
