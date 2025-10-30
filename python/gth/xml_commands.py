@@ -49,6 +49,12 @@ def query_resource(name):
     res = tag("resource", {"name": name})
     return tag("query", None, res)
 
+def query_job(job_id):
+    "Return a string with an XML representation of a <query> command"
+
+    res = tag("job", {"id": job_id})
+    return tag("query", None, res)
+
 def resource(name):
     "Return a string with an XML resource"
 

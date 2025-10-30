@@ -26,7 +26,7 @@ EMCLOSE = Suppress("/>")
 
 
 def _attlist():
-    p_dict = dictOf(Word(alphas), Suppress("=") + quotedString)
+    p_dict = dictOf(Word(alphas + "_"), Suppress("=") + quotedString)
     return p_dict
 
 def _tag(tagname, children, expect_attrs = 1):
@@ -84,7 +84,13 @@ def gth_out():
         resource = _empty_tag("resource") ^ _tag("resource", attributes)
         resources = ZeroOrMore(resource) ^ error
 
-        state  = _tag("state", resources, 0) | _tag("state", resource, 0)
+        # 'job_state' currently only supports MTP-2 and V.110.
+        # This can (should) be extended; see 3.31 Query in the API manual
+        job_state = _tag("v110_monitor", attributes, 1) \
+                    | _tag("mtp2_monitor", attributes, 1)
+
+        state  = _tag("state", resources, 0) | _tag("state", resource, 0) \
+                 | _tag("state", job_state, 0)
 
         gth_out_grammar = ok ^ job ^ event ^ state ^ resource ^ error
 

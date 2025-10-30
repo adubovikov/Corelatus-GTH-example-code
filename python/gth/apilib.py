@@ -86,13 +86,16 @@ class API:
             raise SemanticError(se)
         print(reply.name)
 
-    def new_atm_aal0_layer(self, span, timeslots, opts = {}):
+    def new_atm_aal0_layer(self, span, timeslots, opts = None):
         """Return a (job_id, socket) tuple. Writing to the returned
         socket results in AAL0 cells (packets) being transmitted.
         The data format on the socket is described
         in the GTH API manual, under 'new atm_aal0_layer'."""
 
-        opts, ls = self._tcp_listen()
+        if opts is None:
+            opts = {}
+        l_opts, ls = self._tcp_listen()
+        opts |= l_opts
         AAL0 = xmlc.tag("atm_aal0_layer", opts, _sources_sinks(span, timeslots))
         return self._new_data(ls, AAL0)
 
@@ -202,6 +205,17 @@ class API:
             return {}
 
         return reply[3]
+
+    def query_job(self, name):
+        """Return a dict of attributes
+        Query a GTH job"""
+
+        self.send( xmlc.query_job(name) )
+        reply, _events = self.next_non_event()
+        if reply[0] != "state":
+            raise SemanticError( ("query failed", reply) )
+
+        return reply[4]
 
     def reset(self):
         "Reset (reboot) the GTH"
