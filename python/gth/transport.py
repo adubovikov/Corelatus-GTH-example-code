@@ -131,7 +131,7 @@ class API_socket:
         """Return the next block from the API socket, parsed"""
 
         (content_type, string) = self.receive_raw(timeout)
-        if (content_type != "text/xml"):
+        if content_type != "text/xml":
             raise ParseError(f"unexpected content-type {content_type}")
 
         try:
